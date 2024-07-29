@@ -63,6 +63,7 @@ map.on('load', function() {
             processData(results.data);
         }
     });
+    console.log("surprise >:3");
 });
 
 function processData(results){
