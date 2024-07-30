@@ -1,4 +1,4 @@
-# Leaflet Plugin Review Exercise
+# MapLibreGL Plugin Review Exercise
 
 ### Due 7/29
 
