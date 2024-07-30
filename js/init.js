@@ -7,6 +7,7 @@ const map = new maplibregl.Map({
     zoom: mapOptions.startingZoomLevel
 });
 
+
 function addMarker(data){
     let longitude = data['lng']
     let latitude = data['lat'];
@@ -25,13 +26,14 @@ function addMarker(data){
     const newMarkerElement = document.createElement('div');
 
     newMarkerElement.className = `marker marker-${category}`;
+    const [modifiedLongitude, modifiedLatitude] = PointManager.addPointData(longitude, latitude, 1000);
 
     new maplibregl.Marker({element:newMarkerElement})
-        .setLngLat([longitude, latitude])
+        .setLngLat([modifiedLongitude, modifiedLatitude])
         .setPopup(new maplibregl.Popup()
             .setHTML(popup_message))
         .addTo(map)
-    createButtons(latitude,longitude,vaccinationLocation);
+    createButtons(modifiedLatitude,modifiedLongitude,vaccinationLocation);
 }
 
 function createButtons(lat,lng,title){
