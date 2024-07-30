@@ -1,4 +1,4 @@
-let mapOptions = {'centerLngLat': [-118.444,34.0709],'startingZoomLevel':5}
+let mapOptions = { 'centerLngLat': [-118.444, 34.0709], 'startingZoomLevel': 5 }
 
 const map = new maplibregl.Map({
     container: 'map',
@@ -7,7 +7,7 @@ const map = new maplibregl.Map({
     zoom: mapOptions.startingZoomLevel
 });
 
-function addMarker(data){
+function addMarker(data) {
     let longitude = data['lng']
     let latitude = data['lat'];
     let vaccinationLocation = data['Where did you get vaccinated?'];
@@ -15,37 +15,42 @@ function addMarker(data){
     let vaccinationStatus = data['Have you been vaccinated?']
     let category = vaccinationStatus == "Yes" ? "vaccinated" : "notVaccinated";
     let popup_message;
-    if (vaccinationStatus == "Yes"){
+    if (vaccinationStatus == "Yes") {
         popup_message = `<h2>Vaccinated</h2> <h3>Location: ${vaccinationLocation}</h3> <p>Zip Code: ${homeZipcode}</p>`
     }
-    else{
+    else {
         popup_message = `<h2>Not Vaccinated</h2><p>Zip Code: ${homeZipcode}</p>`
     }
 
     const newMarkerElement = document.createElement('div');
 
     newMarkerElement.className = `marker marker-${category}`;
+    const [modifiedLongitude, modifiedLatitude] = PointManager.addPointData(longitude, latitude, 100);
 
-    new maplibregl.Marker({element:newMarkerElement})
-        .setLngLat([longitude, latitude])
+    const marker = new maplibregl.Marker()
+        .setLngLat([modifiedLongitude, modifiedLatitude])
+        .addTo(map);
+
+    new maplibregl.Marker({ element: newMarkerElement })
+        .setLngLat([modifiedLongitude, modifiedLatitude])
         .setPopup(new maplibregl.Popup()
             .setHTML(popup_message))
         .addTo(map)
-    createButtons(latitude,longitude,vaccinationLocation);
+    createButtons(modifiedLatitude, modifiedLongitude, vaccinationLocation);
 }
 
-function createButtons(lat,lng,title){
-    if (!title){
+function createButtons(lat, lng, title) {
+    if (!title) {
         return;
     }
     const newButton = document.createElement("button");
-    newButton.id = "button"+title; 
+    newButton.id = "button" + title;
     newButton.innerHTML = title;
-    newButton.setAttribute("lat",lat);
-    newButton.setAttribute("lng",lng);
-    newButton.addEventListener('click', function(){
+    newButton.setAttribute("lat", lat);
+    newButton.setAttribute("lng", lng);
+    newButton.addEventListener('click', function () {
         map.flyTo({
-            center: [lng,lat],
+            center: [lng, lat],
         })
     })
     document.getElementById("contents").appendChild(newButton);
@@ -54,18 +59,18 @@ function createButtons(lat,lng,title){
 const dataUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSNq8_prhrSwK3CnY2pPptqMyGvc23Ckc5MCuGMMKljW-dDy6yq6j7XAT4m6GG69CISbD6kfBF0-ypS/pub?output=csv"
 
 // When the map is fully loaded, start adding GeoJSON data
-map.on('load', function() {
+map.on('load', function () {
     createFilterUI();
     Papa.parse(dataUrl, {
         download: true,
         header: true,
-        complete: function(results) {
+        complete: function (results) {
             processData(results.data);
         }
     });
 });
 
-function processData(results){
+function processData(results) {
     console.log(results) //for debugging: this can help us see if the results are what we want
     results.forEach(feature => {
         addMarker(feature);
@@ -99,7 +104,7 @@ function createCheckboxForCategory(category, filterGroup) {
     // Append the container to the filterGroup
     filterGroup.appendChild(container);
 
-    input.addEventListener('change', function(event) {
+    input.addEventListener('change', function (event) {
         toggleMarkersVisibility(category, event.target.checked);
     });
 }
