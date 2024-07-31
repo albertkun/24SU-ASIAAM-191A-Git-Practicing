@@ -26,8 +26,10 @@ function addMarker(data){
 
     newMarkerElement.className = `marker marker-${category}`;
 
+    const [modifiedLongitude, modifiedLatitude] = PointManager.addPointData(longitude, latitude, 25);
+
     new maplibregl.Marker({element:newMarkerElement})
-        .setLngLat([longitude, latitude])
+        .setLngLat([modifiedLongitude, modifiedLatitude])
         .setPopup(new maplibregl.Popup()
             .setHTML(popup_message))
         .addTo(map)
@@ -63,6 +65,7 @@ map.on('load', function() {
             processData(results.data);
         }
     });
+    console.log("surprise >:3");
 });
 
 function processData(results){
